@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/lucid-luna/.github/blob/main/profile/assets/Logo.png" width="180" alt="L.U.N.A. Logo"/>
+  <img src="https://github.com/lucid-luna/.github/blob/main/profile/assets/Rose.png" width="180" alt="L.U.N.A. Logo"/>
 </p>
 
 <h1 align="center">🌙 Luna Models</h1>
