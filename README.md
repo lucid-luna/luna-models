@@ -2,8 +2,11 @@
   <img src="https://github.com/lucid-luna/.github/blob/main/profile/assets/Logo.png" width="180" alt="L.U.N.A. Logo"/>
 </p>
 
-<h1 align="center">Luna Models</h1>
-<h3 align="center">💫 Core Neural Architectures for the L.U.N.A. System</h3>
+<h1 align="center">🌙 Luna Models</h1>
+<p align="center">
+  <b>PyTorch 기반의 멀티모달 인공지능 모델 설계 & 추론 최적화</b><br/>
+  <i>for real-time, low-latency AI companions ✨</i>
+</p>
 
 <p align="center">
   <b>PyTorch 기반의 시각 및 멀티모달 모델을 설계, 훈련, 최적화합니다.</b>
