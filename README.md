@@ -32,17 +32,18 @@
 
 ## 🔨 기본 구조
 
+<pre>
 luna-models/
 ├── src/
-│ ├── models/ # 모델 정의 (e.g., LunaVision)
-│ ├── training/ # 학습 루프, 데이터셋, 평가
-│ └── utils/ # 전처리 및 기타 유틸
-├── configs/ # 모델별 설정 파일
-├── export/ # ONNX / INT4 변환 스크립트
-├── quantize/ # 양자화 관련 코드
-├── train.py # 메인 학습 진입점
+│   ├── models/          # 모델 정의 (e.g., LunaVision)
+│   ├── training/        # 학습 루프, 데이터셋, 평가
+│   └── utils/           # 전처리 및 기타 유틸
+├── configs/             # 모델별 설정 파일
+├── export/              # ONNX / INT4 변환 스크립트
+├── quantize/            # 양자화 관련 코드
+├── train.py             # 메인 학습 진입점
 └── README.md
-
+</pre>
 
 ---
 
