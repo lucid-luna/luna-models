@@ -6,15 +6,17 @@ from datasets import load_from_disk
 from transformers import TrainingArguments, Trainer, AutoTokenizer
 from sklearn.metrics import f1_score
 from utils.config import load_config
-from models.emotion.emotion_model import EmotionClassifier
+from models.emotion.emotion_model import EmotionClassifier, compute_pos_weight
 
 if __name__ == "__main__":
     config = load_config("emotion_config")
     
     # 1) 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained(config.model.name, use_fast=True)
-    model = EmotionClassifier()
     
+    pos_weight = compute_pos_weight()
+    model = EmotionClassifier(pos_weight=pos_weight)
+
     # 2) 데이터셋 로드
     train_ds = load_from_disk(os.path.join(config.data.processed_dir, "train"))
     eval_ds = load_from_disk(os.path.join(config.data.processed_dir, "validation"))
