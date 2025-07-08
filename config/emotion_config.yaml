@@ -1,0 +1,62 @@
+# config/emotion_config.yaml
+
+# ---
+# This is a configuration file for the L.U.N.A project.
+# It contains settings for the data preparation and model training scripts.
+# ---
+
+# Model Configuration
+model:
+  name: "google/electra-small-discriminator"
+  num_labels: 28
+
+data:
+  raw_dir: "data/raw/go_emotions_simplified"
+  processed_dir: "data/processed/go_emotions_simplified"
+  train_split: "train"
+  validation_split: "validation"
+  test_split: "test"
+
+train:
+  output_dir: "outputs/emotion"
+  epochs: 3
+  train_batch_size: 32
+  eval_batch_size: 64
+  learning_rate: 2e-5
+  eval_strategy: "epoch"
+  save_strategy: "epoch"
+  best_metric: "f1_macro"
+
+inference:
+  threshold: 0.1
+  label_list:
+    - admiration
+    - amusement
+    - anger
+    - annoyance
+    - approval
+    - caring
+    - confusion
+    - curiosity
+    - desire
+    - disappointment
+    - disapproval
+    - disgust
+    - embarrassment
+    - excitement
+    - fear
+    - gratitude
+    - grief
+    - joy
+    - love
+    - nervousness
+    - optimism
+    - pride
+    - realization
+    - relief
+    - remorse
+    - sadness
+    - surprise
+    - neutral
+
+max_length: 128
