@@ -1,7 +1,6 @@
 # motion/emotion/evalutate.py
 
 import os
-import torch
 from safetensors.torch import load_file
 from datasets import load_from_disk
 from transformers import Trainer, AutoTokenizer, TrainingArguments
@@ -50,7 +49,7 @@ def main():
     # 5) 평가
     eval_results = trainer.evaluate(eval_dataset=eval_ds)
     
-    print("평가 결과:", eval_results)
+    print("✅ 평가 결과:", eval_results)
 
 if __name__ == "__main__":
     main()
