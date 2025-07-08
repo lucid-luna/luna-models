@@ -6,7 +6,7 @@ Configuration utilities for the L.U.N.A project.
 
 import yaml
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 @dataclass
 class ModelConfig:
@@ -34,8 +34,8 @@ class TrainConfig:
 
 @dataclass
 class InferenceConfig:
-    threshold: float
-    label_list: List[str]
+    threshold: Optional[float] = None
+    label_list: List[str] = None
     
 @dataclass
 class Config:
@@ -56,7 +56,7 @@ def load_config(name: str) -> Config:
         Config: An instance of the Config dataclass with loaded values.
     """
     path = f"config/{name}.yaml"
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding="utf-8") as file:
         config_data = yaml.safe_load(file)
     return Config(
         model=ModelConfig(**config_data['model']),
@@ -66,7 +66,7 @@ def load_config(name: str) -> Config:
             epochs=config_data['train']['epochs'],
             train_batch_size=config_data['train']['train_batch_size'],
             eval_batch_size=config_data['train']['eval_batch_size'],
-            learning_rate=float(config_data['train']['learning_rate']),  # ✅ 여기
+            learning_rate=float(config_data['train']['learning_rate']),
             eval_strategy=config_data['train']['eval_strategy'],
             save_strategy=config_data['train']['save_strategy'],
             best_metric=config_data['train']['best_metric']
@@ -74,3 +74,8 @@ def load_config(name: str) -> Config:
         inference=InferenceConfig(**config_data['inference']),
         max_length=config_data['max_length']
     )
+
+def load_config_dict(name: str) -> dict:
+    path = f"config/{name}.yaml"
+    with open(path, "r", encoding="utf-8") as file:
+        return yaml.safe_load(file)

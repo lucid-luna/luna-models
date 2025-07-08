@@ -19,7 +19,7 @@ data:
 
 train:
   output_dir: "outputs/emotion"
-  epochs: 3
+  epochs: 5
   train_batch_size: 32
   eval_batch_size: 64
   learning_rate: 2e-5
@@ -28,7 +28,7 @@ train:
   best_metric: "f1_macro"
 
 inference:
-  threshold: 0.1
+  threshold: 0.85
   label_list:
     - admiration
     - amusement

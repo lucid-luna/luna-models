@@ -1,13 +1,13 @@
-# scripts/prepare_data.py
+# scripts/intent_prepare_data.py
 import os
 from datasets import load_dataset
 
 def main():
-    base_dir = os.path.join("data", "raw", "go_emotions_simplified")
+    base_dir = os.path.join("data", "raw", "clinc_oos")
     for split in ("train", "validation", "test"):
         os.makedirs(os.path.join(base_dir, split), exist_ok=True)
 
-    ds = load_dataset("google-research-datasets/go_emotions", "simplified")
+    ds = load_dataset("clinc/clinc_oos", "plus")
 
     ds["train"].save_to_disk(os.path.join(base_dir, "train"))
     ds["validation"].save_to_disk(os.path.join(base_dir, "validation"))
