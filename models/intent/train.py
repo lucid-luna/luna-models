@@ -1,37 +1,47 @@
-# model/intent/train.py
+# ====================================================================
+#  File: models/intent/train.py
+# ====================================================================
+"""
+LunaIntent 모델 학습 스크립트
+
+이 스크립트는 전처리된 intent 데이터셋을 로드하고 IntentClassifier 
+모델을 초기화한 뒤 학습 및 검증을 수행하고 최적 모델과 토크나이저를 저장합니다.
+
+실행 예시:
+    python -m models.intent.train
+"""
 
 import os
-import json
 import numpy as np
+
 from datasets import load_from_disk
 from transformers import TrainingArguments, Trainer, AutoTokenizer
 from sklearn.metrics import accuracy_score
+
 from utils.config import load_config
 from models.intent.intent_model import IntentClassifier
 
-if __name__ == "__main__":
+def main():
     config = load_config("intent_config")
     
-    # 1) 토크나이저 로드
     tokenizer = AutoTokenizer.from_pretrained(config.model.name, use_fast=True)
-    
     model = IntentClassifier()
     
-    # 2) 데이터셋 로드
     train_ds = load_from_disk(os.path.join(config.data.processed_dir, "train"))
     eval_ds = load_from_disk(os.path.join(config.data.processed_dir, "validation"))
     
-    # 3) Metrics 함수 정의
     def compute_metrics(eval_pred):
+        """
+        eval_pred: (logits, labels)
+        logits은 (batch_size, num_labels) 형태, labels은 (batch_size,) 형태
+        """
         logits, labels = eval_pred
         if isinstance(logits, (tuple, dict)):
             logits = logits[0]
         preds = np.argmax(logits, axis=1)
-        return {
-            "accuracy": accuracy_score(np.array(labels), np.array(preds))
-        }
+        acc = accuracy_score(labels, preds)
+        return {"accuracy": acc}
     
-    # 4) TrainingArguments
     training_args = TrainingArguments(
         output_dir=config.train.output_dir,
         num_train_epochs=config.train.epochs,
@@ -48,7 +58,6 @@ if __name__ == "__main__":
         logging_steps=50,
     )
     
-    # 5) Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -58,8 +67,10 @@ if __name__ == "__main__":
         compute_metrics=compute_metrics
     )
     
-    # 6) 모델 학습
     trainer.train()
     trainer.save_model(config.train.output_dir)
     tokenizer.save_pretrained(config.train.output_dir)
-    print(f"모델과 토크나이저가 {config.train.output_dir}에 저장되었습니다.")
+    print(f"[L.U.N.A] 학습 완료. 모델과 토크나이저가 '{config.train.output_dir}'에 저장되었습니다.")
+    
+if __name__ == "__main__":
+    main()

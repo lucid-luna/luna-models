@@ -79,3 +79,8 @@ def load_config_dict(name: str) -> dict:
     path = f"config/{name}.yaml"
     with open(path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
+
+def load_multitask_config_dict(name: str) -> dict:
+    path = f"config/{name}.yaml"
+    with open(path, "r", encoding="utf-8") as file:
+        return yaml.safe_load(file)

@@ -1,0 +1,67 @@
+# vision_config.yaml
+
+# -------------------------------------------------------------------
+# Preprocessing 설정
+# -------------------------------------------------------------------
+output_dir: "./outputs/vision"
+
+datasets:
+  - name: "coco_caption"
+    hf_id: "coco_captions"
+    splits: ["train", "validation"]
+    img_key: "image"
+    txt_key: "caption"
+    answer_key: "caption"
+  # - name: "your_dataset"
+  #   hf_id: "..."
+  #   splits: ["train", "validation", "test"]
+  #   img_key: "..."
+  #   txt_key: "..."
+  #   answer_key: "..."
+
+# -------------------------------------------------------------------
+# LoRA 파인튜닝 설정
+# -------------------------------------------------------------------
+train_lora:
+  model_name: "openai/clip-vit-base-patch32"
+  dataset_dir: "./data/vision"
+  max_length: 512
+  train_bsz: 8
+  eval_bsz: 8
+  grad_acc: 4
+  epochs: 5
+  lr: 5e-5
+  logging_steps: 50
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+
+# -------------------------------------------------------------------
+# Serving 설정
+# -------------------------------------------------------------------
+serve:
+  model_dir: "models/vision/ov/fp16"
+  device: "NPU"
+  prompt_tpl: |
+    <|user|>
+    <|image_1|>
+    SYSTEM: You are a Desktop Activity Assistant.
+    Study the screenshot and any on‐screen text, then describe in one English sentence in this format:
+      “The user has [App1] and [App2] open, is [action1], and is [action2].”
+    For example:
+      → “The user has VSCode and a browser window open, is editing Python code, and is chatting with ChatGPT.”
+    SCREEN_TEXT: "{ocr_text}"
+    USER: What is the user doing?
+    <|assistant|>
+  max_new_tokens: 48
+  temperature: 0.0
+  top_p: 1.0
+  char_limit: 300
+
+# python -m models.vision.preprocess --config vision_config.yaml
+# python -m models.vision.train_lora --config vision_config.yaml --output_dir outputs/vision_lora

@@ -1,58 +1,116 @@
-# model/intent/inference.py
+# ====================================================================
+#  File: models/multiintent/inference.py
+# ====================================================================
+"""
+LunaMultiIntent 모델 추론 스크립트
 
-import torch
+학습된 MultiIntentClassifier 모델을 로드하여 입력 텍스트의
+상위 K개 인텐트를 확률과 함께 출력합니다.
+
+실행 예시:
+    python -m models.multiintent.inference --text "I'd like to cancel my subscription." --top_k 3
+"""
+
+import os
 import argparse
+import torch
 from safetensors.torch import load_file
 from transformers import AutoTokenizer
+
 from utils.config import load_config
-from models.intent.intent_model import IntentClassifier
+from models.multiintent.intent_model import MultiIntentClassifier
 
-def infer(text: str):
-    config = load_config("intent_config")
-    device = torch.device("cpu")  # 또는 "cuda" 사용 가능
-    
-    # 1) 토크나이저 로드
-    tokenizer = AutoTokenizer.from_pretrained(config.model.name, use_fast=True)
-    
-    # 2) 모델 로드
-    model = IntentClassifier()
-    model.load_state_dict(load_file(f"{config.train.output_dir}/model.safetensors"))
-    model.to(device)
-    model.eval()
+class MultiIntentInference:
+    """
+    L.U.N.A Multi-Intent 추론 클래스
 
-    # 3) 입력 텍스트 토크나이징
-    inputs = tokenizer(
-        text,
-        truncation=True,
-        padding="max_length",
-        max_length=config.max_length,
-        return_tensors="pt"
+    속성:
+        config: 설정 객체
+        device: 'cuda' 또는 'cpu'
+        tokenizer: 입력 토큰화를 위한 토크나이저
+        model: MultiIntentClassifier 인스턴스
+    """
+    def __init__(self):
+        self.config = load_config("multiintent_config")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.config.model.name,
+            use_fast=True
+        )
+
+        self.model = MultiIntentClassifier(
+            model_name=self.config.model.name,
+            num_labels=self.config.model.num_labels
+        )
+        model_path = os.path.join(self.config.train.output_dir, "model.safetensors")
+        self.model.load_state_dict(load_file(model_path, device=self.device.type))
+        self.model.to(self.device)
+        self.model.eval()
+
+        print(f"[L.U.N.A] Multi-Intent 모델 로딩 완료. 추론 장치: {self.device.type.upper()}")
+        
+    def infer(self, text: str, top_k: int = 2):
+        """
+        입력 텍스트에 대해 상위 K개 인텐트를 예측합니다.
+
+        Args:
+            text (str): 분석할 문장
+            top_k (int): 반환할 상위 인텐트 개수
+
+        Returns:
+            List[Tuple[str, float]]: (레이블, 확률) 리스트
+        """
+
+        enc = self.tokenizer(
+            text,
+            truncation=True,
+            padding="max_length",
+            max_length=self.config.max_length,
+            return_tensors="pt"
+        )
+        inputs = {
+            "input_ids": enc["input_ids"].to(self.device),
+            "attention_mask": enc["attention_mask"].to(self.device)
+        }
+
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            logits = outputs.logits.squeeze(0)
+            probs = torch.sigmoid(logits)
+
+        top_probs, top_idxs = torch.topk(probs, top_k)
+        label_list = self.config.inference.label_list
+
+        return [(label_list[idx], prob.item()) for idx, prob in zip(top_idxs.tolist(), top_probs)]
+
+
+def main():
+    parser = argparse.ArgumentParser(description="L.U.N.A Multi-Intent 추론기")
+    parser.add_argument(
+        "--text",
+        type=str,
+        required=True,
+        help="추론할 입력 텍스트"
     )
-    
-    inputs = {
-        "input_ids": inputs["input_ids"].to(device),
-        "attention_mask": inputs["attention_mask"].to(device)
-    }
-
-    # 4) 모델 추론
-    with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits.squeeze(0)
-        probs = torch.softmax(logits, dim=-1)
-        pred_idx = torch.argmax(probs).item()
-
-    # 5) 라벨 매핑
-    label_list = config.inference.label_list
-    pred_label = label_list[pred_idx] if pred_idx < len(label_list) else "(unknown)"
-    
-    # 6) 결과 출력
-    print(f"📥 입력: {text}")
-    print(f"🎯 예측된 인텐트: {pred_label} (index: {pred_idx})")
-    print(f"📊 확률 상위 인텐트: {probs[pred_idx].item():.4f}")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="L.U.N.A. Intent Inference")
-    parser.add_argument("--text", type=str, required=True, help="입력 텍스트")
+    parser.add_argument(
+        "--top_k",
+        type=int,
+        default=2,
+        help="출력할 상위 인텐트 개수 (기본값: 2)"
+    )
     args = parser.parse_args()
 
-    infer(args.text)
+    engine = MultiIntentInference()
+    results = engine.infer(args.text, args.top_k)
+
+    print("\n" + "=" * 40)
+    print(f"입력 텍스트: \"{args.text}\"")
+    print("─" * 40)
+    print("예측된 인텐트:")
+    for label, conf in results:
+        print(f"  - {label:<30} ({conf:.2%})")
+    print("=" * 40)
+
+if __name__ == "__main__":
+    main()

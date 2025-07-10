@@ -1,15 +1,15 @@
 # config/emotion_config.yaml
 
-# ---
-# This is a configuration file for the L.U.N.A project.
-# It contains settings for the data preparation and model training scripts.
-# ---
-
-# Model Configuration
+# -------------------------------------------------------------------
+# Emotion 분류 모델 설정
+# -------------------------------------------------------------------
 model:
   name: "google/electra-small-discriminator"
   num_labels: 28
 
+# -------------------------------------------------------------------
+# 데이터 경로 설정
+# -------------------------------------------------------------------
 data:
   raw_dir: "data/raw/go_emotions_simplified"
   processed_dir: "data/processed/go_emotions_simplified"
@@ -17,6 +17,9 @@ data:
   validation_split: "validation"
   test_split: "test"
 
+# -------------------------------------------------------------------
+# 학습 하이퍼파라미터
+# -------------------------------------------------------------------
 train:
   output_dir: "outputs/emotion"
   epochs: 5
@@ -27,6 +30,9 @@ train:
   save_strategy: "epoch"
   best_metric: "f1_macro"
 
+# -------------------------------------------------------------------
+# 추론(inference) 설정
+# -------------------------------------------------------------------
 inference:
   threshold: 0.85
   label_list:
@@ -59,4 +65,7 @@ inference:
     - surprise
     - neutral
 
+# -------------------------------------------------------------------
+# 토크나이저 최대 시퀀스 길이
+# -------------------------------------------------------------------
 max_length: 128

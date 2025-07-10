@@ -1,14 +1,15 @@
 # config/intent_config.yaml
 
-# ---
-# Configuration for L.U.N.A Intent Classification
-# Based on clinc_oos (plus) dataset and BERT-tiny model
-# ---
-
+# -------------------------------------------------------------------
+# Single-Intent 분류 모델 설정
+# -------------------------------------------------------------------
 model:
   name: "google/bert_uncased_L-2_H-128_A-2"
   num_labels: 151
 
+# -------------------------------------------------------------------
+# 데이터 경로 설정
+# -------------------------------------------------------------------
 data:
   raw_dir: "data/raw/clinc_oos"
   processed_dir: "data/processed/clinc_oos"
@@ -16,6 +17,9 @@ data:
   validation_split: "validation"
   test_split: "test"
 
+# -------------------------------------------------------------------
+# 학습 하이퍼파라미터
+# -------------------------------------------------------------------
 train:
   output_dir: "outputs/intent"
   epochs: 30
@@ -26,6 +30,9 @@ train:
   save_strategy: "epoch"
   best_metric: "accuracy"
 
+# -------------------------------------------------------------------
+# 추론(inference) 설정
+# -------------------------------------------------------------------
 inference:
   label_list:
     - restaurant_reviews
@@ -180,4 +187,7 @@ inference:
     - travel_suggestion
     - change_volume
 
+# -------------------------------------------------------------------
+# 토크나이저 최대 시퀀스 길이
+# -------------------------------------------------------------------
 max_length: 64
