@@ -20,10 +20,13 @@
 
 | 모델명 | 설명 | 상태 |
 |--------|------|------|
-| `LunaVision` | 이미지 기반 상황 인식 태거 (NPU 대응) | 🔧 개발 중 |
-| `LunaMM` | 이미지 → 문장 생성 | ⏳ 계획 |
-| `LunaEmbed` | 이미지/텍스트 공통 임베딩 매핑기 | ⏳ 계획 |
-| `LunaTuner` | 캐릭터 LLM 튜닝용 LoRA Adapter | ⏳ 계획 |
+| `LunaEmotion` | 다중 레이블 텍스트 감정 분석 | 완료 |
+| `LunaIntent` | 다중 레이블 텍스트 의도 분석 | 완료 |
+| `LunaTTS` | Style-BERT-VITS2 참고 | 완료 |
+| `LunaVision` | 이미지 기반 상황 인식 태거 (NPU 대응) | 완료 |
+| `LunaMM` | 이미지 → 문장 생성 | 계획 |
+| `LunaEmbed` | 이미지/텍스트 공통 임베딩 매핑기 | 계획 |
+| `LunaTuner` | 캐릭터 LLM 튜닝용 LoRA Adapter | 계획 |
 
 ---
 
