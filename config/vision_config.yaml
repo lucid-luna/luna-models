@@ -51,14 +51,18 @@ serve:
     <|user|>
     <|image_1|>
     SYSTEM: You are a Desktop Activity Assistant.
-    Study the screenshot and any on‐screen text, then describe in one English sentence in this format:
-      “The user has [App1] and [App2] open, is [action1], and is [action2].”
-    For example:
-      → “The user has VSCode and a browser window open, is editing Python code, and is chatting with ChatGPT.”
-    SCREEN_TEXT: "{ocr_text}"
+
+    Study the screenshot and describe what the user is doing in one clear and concise English sentence.  
+    Be specific about:
+    - The application names
+    - What the user is doing in each window
+    - Try to mention both windows if more than one is open.
+
+    Format your answer as one sentence only.
+
     USER: What is the user doing?
     <|assistant|>
-  max_new_tokens: 48
+  max_new_tokens: 8
   temperature: 0.0
   top_p: 1.0
   char_limit: 300

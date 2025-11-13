@@ -40,7 +40,7 @@ def main():
         ds = Dataset.from_list(records)
         save_path = os.path.join(output_base, split_name)
         ds.save_to_disk(save_path)
-        print(f"✅ {split_name} 저장 완료 → {save_path}")
+        print(f"{split_name} 저장 완료 → {save_path}")
 
 if __name__ == "__main__":
     main()

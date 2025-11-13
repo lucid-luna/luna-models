@@ -5,18 +5,18 @@
 LunaVision OpenVINO 모델 변환 스크립트
 
 • fp16 모델(LoRA 적용 포함)을 OpenVINO IR(./fp16)로 변환
-• --precision int4 옵션을 주면 POT(Post-Training Optimization) INT4 양자화도 수행
+• --precision int4 옵션을 주면 INT4 양자화도 수행
 
 실행 예시:
     1) fp16 IR 변환
         python -m models.vision.export_openvino \
             --model_dir outputs/vision/fp16_lora \
-            --out_dir  models/vision/ov/fp16 \
+            --output_dir  models/vision/ov/fp16 \
             --precision fp16
     2) int4 양자화
         python -m models.vision.export_openvino \
             --model_dir outputs/vision/fp16_lora \
-            --out_dir  models/vision/ov/int4 \
+            --output_dir  models/vision/ov/int4 \
             --precision int4
 """
 

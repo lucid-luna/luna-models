@@ -13,7 +13,7 @@ def main():
     ds["validation"].save_to_disk(os.path.join(base_dir, "validation"))
     ds["test"].save_to_disk(os.path.join(base_dir, "test"))
 
-    print("✅ 데이터셋이 ", base_dir, "에 저장되었습니다.")
+    print("데이터셋이 ", base_dir, "에 저장되었습니다.")
 
 if __name__ == "__main__":
     main()

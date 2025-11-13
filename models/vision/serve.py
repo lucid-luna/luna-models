@@ -31,7 +31,6 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
-from pytesseract import image_to_string
 from utils.config import load_config_dict as load_cfg
 
 from openvino import Tensor
@@ -128,28 +127,6 @@ def init_ovms(ovms_address: str):
 def pil_to_tensor(img: Image.Image) -> Tensor:
     return Tensor(np.asarray(img, dtype=np.uint8)[None])
 
-def fit_ocr_to_limit(text: str) -> str:
-    """
-    템플릿 + OCR 길이가 1024 토큰을 넘지 않도록 OCR을 절단.
-    """
-    if tokenizer is None:
-        return text
-
-    base_ids = tokenizer.encode(PROMPT_TPL.format(ocr_text="")).input_ids
-    base_len = np.asarray(base_ids).size
-
-    max_ocr = MAX_PROMPT - base_len - RESERVE_TOK
-    if max_ocr <= 0:
-        return ""
-
-    ocr_ids = np.asarray(tokenizer.encode(text).input_ids).flatten()
-
-    if ocr_ids.size <= max_ocr:
-        return text
-    
-    truncated_ids = ocr_ids[:max_ocr].tolist()
-    return tokenizer.decode(truncated_ids, skip_special_tokens=True)
-
 def pil_to_bytes(img: Image.Image) -> bytes:
     buf = io.BytesIO()
     img.save(buf, format="JPEG")
@@ -229,10 +206,7 @@ async def vision_qa(
         log.error("Failed to load image", exc_info=e)
         raise HTTPException(status_code=400, detail=f"이미지 로드 실패: {str(e)}")
     
-    raw_ocr = image_to_string(img, lang="eng+kor").strip()
-    ocr_text = fit_ocr_to_limit(raw_ocr)
-    
-    prompt   = PROMPT_TPL.format(ocr_text=ocr_text)
+    prompt = PROMPT_TPL
     
     try:
         async with semaphore:
